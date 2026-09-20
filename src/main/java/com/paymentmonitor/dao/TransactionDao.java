@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -42,6 +43,14 @@ public class TransactionDao {
 
         return transaction;
     };
+
+    private static final RowMapper<GatewayStatsResponse> GATEWAY_STATS_ROW_MAPPER = (rs, rowNum) ->
+            new GatewayStatsResponse(
+                    rs.getString("gateway"),
+                    rs.getLong("total_count"),
+                    rs.getLong("success_count"),
+                    rs.getLong("failed_count")
+            );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -76,13 +85,16 @@ public class TransactionDao {
 
     public List<GatewayStatsResponse> getGatewayWiseStats() {
 
-        return jdbcTemplate.query(ReportQueries.GET_GATEWAY_WISE_STATS, (rs, rowNum) ->
-                new GatewayStatsResponse(
-                        rs.getString("gateway"),
-                        rs.getLong("total_count"),
-                        rs.getLong("success_count"),
-                        rs.getLong("failed_count")
-                )
+        return jdbcTemplate.query(ReportQueries.GET_GATEWAY_WISE_STATS, GATEWAY_STATS_ROW_MAPPER);
+    }
+
+    public List<GatewayStatsResponse> getGatewayWiseStats(LocalDateTime from, LocalDateTime to) {
+
+        return jdbcTemplate.query(
+                ReportQueries.GET_GATEWAY_WISE_STATS_BY_DATE_RANGE,
+                GATEWAY_STATS_ROW_MAPPER,
+                from,
+                to
         );
     }
 

@@ -87,4 +87,14 @@ public class ReportQueries {
         FROM transactions
         GROUP BY gateway
         """;
+
+    public static final String GET_GATEWAY_WISE_STATS_BY_DATE_RANGE = """
+        SELECT gateway,
+               COUNT(*) AS total_count,
+               SUM(CASE WHEN status = 'SUCCESS' THEN 1 ELSE 0 END) AS success_count,
+               SUM(CASE WHEN status = 'FAILED' THEN 1 ELSE 0 END) AS failed_count
+        FROM transactions
+        WHERE request_time BETWEEN ? AND ?
+        GROUP BY gateway
+        """;
 }
