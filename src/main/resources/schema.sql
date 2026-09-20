@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS alerts (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    gateway VARCHAR(100) NOT NULL,
+    total_count BIGINT NOT NULL,
+    failed_count BIGINT NOT NULL,
+    failure_rate DOUBLE NOT NULL,
+    threshold DOUBLE NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

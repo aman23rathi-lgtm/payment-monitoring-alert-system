@@ -1,6 +1,7 @@
 package com.paymentmonitor.scheduler;
 
 import com.paymentmonitor.dto.GatewayStatsResponse;
+import com.paymentmonitor.services.AlertService;
 import com.paymentmonitor.services.MonitoringService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +16,11 @@ public class MonitoringScheduler {
     private static final Logger logger = LoggerFactory.getLogger(MonitoringScheduler.class);
 
     private final MonitoringService monitoringService;
+    private final AlertService alertService;
 
-    public MonitoringScheduler(MonitoringService monitoringService) {
+    public MonitoringScheduler(MonitoringService monitoringService, AlertService alertService) {
         this.monitoringService = monitoringService;
+        this.alertService = alertService;
     }
 
     @Scheduled(fixedRateString = "${monitoring.schedule.rate}")
@@ -39,6 +42,8 @@ public class MonitoringScheduler {
                     violation.getTotalCount(),
                     violation.getFailedCount()
             );
+
+            alertService.raiseAlert(violation);
         }
     }
 }
